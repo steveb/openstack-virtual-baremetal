@@ -105,6 +105,9 @@ resources:
       cidr: 192.0.2.0/24
       gateway_ip: null
       enable_dhcp: false
+      allocation_pools:
+      - start: 192.0.2.5
+        end: 192.0.2.24
 
   public_network:
     type: OS::Neutron::Net
@@ -141,21 +144,40 @@ resources:
       - protocol: tcp
       - protocol: udp
 
+  undercloud_public_port:
+    type: OS::Neutron::Port
+    properties:
+      network: {get_resource: public_network}
+      fixed_ips:
+      - subnet: {get_resource: public_subnet}
+
+  undercloud_provision_port:
+    type: OS::Neutron::Port
+    properties:
+      network: {get_resource: provision_network}
+      fixed_ips:
+      - ip_address: 192.0.2.1
+        subnet: {get_resource: provision_subnet}
+
+  private_port:
+    type: OS::Neutron::Port
+    properties:
+      network: {get_param: private_net}
+      security_groups:
+      - {get_resource: undercloud_sg}
+
   undercloud_server:
     type: OS::Nova::Server
     properties:
       flavor: {get_param: undercloud_flavor}
       image: {get_param: undercloud_image}
       key_name: {get_param: key_name}
-      security_groups:
-      - {get_resource: undercloud_sg}
-      - {get_resource: all_sg}
-      - {get_resource: all_sg}
       networks:
-      - network: {get_param: private_net}
-      - network: {get_resource: provision_network}
-      - network: {get_resource: public_network}
+      - port: {get_resource: private_port}
+      - port: {get_resource: undercloud_provision_port}
+      - port: {get_resource: undercloud_public_port}
       name: {get_param: undercloud_name}
+      user_data_format: RAW
 
   undercloud_floating_ip:
     type: OS::OVB::UndercloudFloating
