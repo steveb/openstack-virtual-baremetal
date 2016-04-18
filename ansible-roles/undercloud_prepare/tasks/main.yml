@@ -1,0 +1,28 @@
+- name: set hostname
+  become: yes
+  hostname: name=undercloud.openstacklocal
+
+- name: really set hostname
+  become: yes
+  shell: |
+    hostnamectl set-hostname undercloud.openstacklocal
+    hostnamectl set-hostname --transient undercloud.openstacklocal
+
+- name: hosts hostname entry
+  become: yes
+  lineinfile: dest=/etc/hosts state=present insertafter=EOF line='127.0.0.1 undercloud.openstacklocal'
+
+- name: fetch eth0 mtu 
+  become: yes 
+  shell: | 
+    ifconfig eth0 |egrep -o 'mtu [^ ]*' |cut -d' ' -f2 
+  register: mtu 
+ 
+- name: apply mtu to all interfaces 
+  become: yes 
+  shell: | 
+    ifconfig eth1 mtu {{ mtu.stdout }} 
+    ifconfig eth2 mtu {{ mtu.stdout }}
+
+- name: put nodes.json
+  copy: src={{ local_working_dir }}/nodes.json dest=~/instackenv.json

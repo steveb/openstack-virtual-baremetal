@@ -1,0 +1,14 @@
+
+# - name: fetch undercloud image
+#   get_url: url={{ image_url }} dest={{ local_working_dir }}/{{ undercloud_image }}.qcow2
+#   register: fetch_undercloud_image
+
+# - name: create undercloud image
+#   shell: |
+#     export OS_USERNAME={{ os_user }}
+#     export OS_PASSWORD={{ os_password }}
+#     export OS_PROJECT_NAME={{ os_project }}
+#     export OS_AUTH_URL={{ os_auth_url }}
+#     openstack image delete {{ undercloud_image }} || true
+#     openstack image create --file {{ local_working_dir }}/{{ undercloud_image }}.qcow2 {{ undercloud_image }}
+#   # when: fetch_undercloud_image.changed

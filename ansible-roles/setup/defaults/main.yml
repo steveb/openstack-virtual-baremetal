@@ -1,0 +1,27 @@
+
+# Name of the heat stack in the host cloud which creates networking,
+# undercloud, bmc and baremetal servers
+ovb_stack_name: ovb
+
+# Variables specific to the base OS of the undercloud image
+working_dir: /home/centos
+undercloud_ansible_user: centos
+
+# Name to use to store the undercloud image in the host cloud.
+# Will be deleted and created on each run of quickstart.sh
+undercloud_image: ovb-undercloud-image
+
+# undercloud server
+undercloud_name: undercloud
+undercloud_flavor: m1.large
+
+# bmc server 
+bmc_prefix: bmc 
+bmc_image: CentOS-7.1.1503-x86_64-GenericCloud.qcow2 
+bmc_flavor: m1.medium 
+ 
+# baremetal servers 
+node_count: 2 
+baremetal_prefix: baremetal 
+baremetal_image: ipxe-boot 
+baremetal_flavor: m1.medium

@@ -1,0 +1,8 @@
+- name: build nodes.json
+  shell: |
+    export OS_USERNAME={{ os_user }}
+    export OS_PASSWORD={{ os_password }}
+    export OS_PROJECT_NAME={{ os_project }}
+    export OS_AUTH_URL={{ os_auth_url }}
+    cd {{ local_working_dir }}
+    {{ role_path }}/../../bin/build-nodes-json

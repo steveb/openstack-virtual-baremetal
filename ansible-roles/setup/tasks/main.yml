@@ -1,0 +1,6 @@
+
+- include: create_undercloud_image.yml
+
+- include: stack_create_ovb.yml
+
+- include: build_nodes_json.yml

@@ -1,0 +1,54 @@
+- name: create stack
+  shell: |
+    export OS_USERNAME={{ os_user }}
+    export OS_PASSWORD={{ os_password }}
+    export OS_PROJECT_NAME={{ os_project }}
+    export OS_AUTH_URL={{ os_auth_url }}
+
+    cd {{ role_path }}/../../
+    openstack stack create --wait \
+        -t templates/quintupleo.yaml \
+        -e templates/resource-registry.yaml \
+        --parameter "key_name={{ key_name }}" \
+        --parameter "os_user={{ os_user }}" \
+        --parameter "os_password={{ os_password }}" \
+        --parameter "os_tenant={{ os_project }}" \
+        --parameter "os_auth_url={{ os_auth_url }}" \
+        --parameter "external_net={{ external_net }}" \
+        --parameter "public_net={{ public_net }}" \
+        --parameter "provision_net={{ provision_net }}" \
+        --parameter "undercloud_name={{ undercloud_name }}" \
+        --parameter "undercloud_image={{ undercloud_image }}" \
+        --parameter "undercloud_flavor={{ undercloud_flavor }}" \
+        --parameter "bmc_prefix={{ bmc_prefix }}" \
+        --parameter "bmc_image={{ bmc_image }}" \
+        --parameter "bmc_flavor={{ bmc_flavor }}" \
+        --parameter "node_count={{ node_count }}" \
+        --parameter "baremetal_prefix={{ baremetal_prefix }}" \
+        --parameter "baremetal_image={{ baremetal_image }}" \
+        --parameter "baremetal_flavor={{ baremetal_flavor }}" \
+        {{ ovb_stack_name }}
+
+- name: lookup undercloud address
+  shell: |
+    export OS_USERNAME={{ os_user }}
+    export OS_PASSWORD={{ os_password }}
+    export OS_PROJECT_NAME={{ os_project }}
+    export OS_AUTH_URL={{ os_auth_url }}
+    openstack stack output show --format value --column output_value {{ ovb_stack_name }} undercloud_host_floating_ip
+  register: undercloud_host_output
+
+- name: set undercloud_host
+  set_fact:
+    undercloud_host: "{{ undercloud_host_output.stdout }}"
+
+- name: ssh to undercloud
+  command:
+    ssh -o BatchMode=yes {{ undercloud_ansible_user }}@{{ undercloud_host }} true
+  register: result
+  until: result|success
+  retries: 300
+  delay: 5
+
+- name: add undercloud to inventory
+  add_host: name={{ undercloud_host }} group=undercloud undercloud_host={{ undercloud_host }} ansible_user={{ undercloud_ansible_user }}
