@@ -32,3 +32,9 @@ outputs:
   ports:
     value:
     - {port: {get_resource: provision_port}}
+  server_name:
+    value:
+      list_join:
+      - ''
+      - - {get_param: baremetal_prefix}
+        - {get_param: suffix}

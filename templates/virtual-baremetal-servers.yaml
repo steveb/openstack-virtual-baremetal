@@ -41,11 +41,7 @@ resources:
       config_drive: false
       key_name: {get_param: key_name}
       networks: {get_attr: [baremetal_ports, ports]}
-      name:
-        list_join:
-        - ''
-        - - {get_param: baremetal_prefix}
-          - {get_param: suffix}
+      name: {get_attr: [baremetal_ports, server_name]}
 
 outputs:
   bmc_nic:

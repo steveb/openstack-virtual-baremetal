@@ -112,3 +112,9 @@ outputs:
     - {port: {get_resource: storage_port}}
     - {port: {get_resource: storage_mgmt_port}}
     - {port: {get_resource: tenant_port}}
+  server_name:
+    value:
+      list_join:
+      - ''
+      - - {get_param: baremetal_prefix}
+        - {get_param: suffix}
