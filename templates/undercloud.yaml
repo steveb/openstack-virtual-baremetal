@@ -41,6 +41,7 @@ resources:
       name: {get_param: undercloud_name}
       user_data_format: {get_param: undercloud_user_data_format}
       user_data: {get_param: undercloud_user_data}
+      config_drive: true
 
   undercloud_floating_ip:
     type: OS::OVB::UndercloudFloating

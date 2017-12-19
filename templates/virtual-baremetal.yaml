@@ -170,6 +170,7 @@ resources:
       key_name: {get_param: key_name}
       networks: {get_attr: [bmc_port, port]}
       name: {get_param: bmc_prefix}
+      config_drive: true
       user_data_format: RAW
       user_data:
         str_replace:
